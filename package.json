@@ -1,0 +1,23 @@
+{
+  "name": "sql-employee-tracker",
+  "version": "1.0.0",
+  "description": "MySQL CLI application that manages a company's employee database",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheInfamousGrim/sql-employee-tracker.git"
+  },
+  "author": "George Fincher",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheInfamousGrim/sql-employee-tracker/issues"
+  },
+  "homepage": "https://github.com/TheInfamousGrim/sql-employee-tracker#readme",
+  "dependencies": {
+    "inquirer": "^9.1.2",
+    "mysql": "^2.18.1"
+  }
+}
