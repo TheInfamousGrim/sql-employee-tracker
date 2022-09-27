@@ -12,8 +12,8 @@ function viewAllEmployees(connection, cb) {
     const query = `SELECT employee.id, employee.first_name, employee.last_name, 
         role.title, role.salary, 
         department.name AS department, 
-        e2.first_name AS manager FROM employee LEFT 
-        JOIN employee as e2 ON e2.id = employee.manager_id 
+        e.first_name AS manager FROM employee LEFT 
+        JOIN employee as e ON e.id = employee.manager_id 
         JOIN role ON employee.role_id = role.id 
         JOIN department ON role.department_id = department.id 
         ORDER BY employee.id;`;
@@ -27,8 +27,8 @@ function viewAllEmployees(connection, cb) {
 function viewEmployeeManager(connection, startPrompt) {
     // Query the database for all distinct managers from employee table
     connection.query(
-        `SELECT DISTINCT e2.first_name, e2.last_name FROM employee
-        LEFT JOIN employee AS e2 ON employee.manager_id = e2.id WHERE e2.first_name IS NOT NULL`,
+        `SELECT DISTINCT e.first_name, e.last_name FROM employee
+        LEFT JOIN employee AS e ON employee.manager_id = e.id WHERE e.first_name IS NOT NULL`,
         (err, results) => {
             if (err) throw err;
             inquirer
@@ -37,6 +37,7 @@ function viewEmployeeManager(connection, startPrompt) {
                         name: 'manager',
                         type: 'list',
                         choices() {
+                            // Create an array of managers names to choose from
                             const choiceArray = [];
                             for (let i = 0; i < results.length; i++) {
                                 choiceArray.push(`${results[i].first_name} ${results[i].last_name}`);
@@ -49,10 +50,10 @@ function viewEmployeeManager(connection, startPrompt) {
                 .then((answer) => {
                     const query = `SELECT employee.id, employee.first_name, employee.last_name, 
                     role.title, role.salary, 
-                    department.name AS department, CONCAT(e2.first_name, ' ', e2.last_name) AS manager FROM employee 
-                    LEFT JOIN employee AS e2 ON e2.id = employee.manager_id 
+                    department.name AS department, CONCAT(e.first_name, ' ', e.last_name) AS manager FROM employee 
+                    LEFT JOIN employee AS e ON e.id = employee.manager_id 
                     JOIN role ON employee.role_id = role.id 
-                    JOIN department ON role.department_id = department.id WHERE e2.first_name = ?
+                    JOIN department ON role.department_id = department.id WHERE e.first_name = ?
                     ORDER BY employee.id;`;
                     const managerFirstName = answer.manager.split(' ')[0];
                     connection.query(query, managerFirstName, (err, res) => {
@@ -107,8 +108,8 @@ function viewEmployeeDepartment(connection, cb) {
                 const query = `SELECT employee.id, employee.first_name, employee.last_name, 
                     role.title, role.salary, 
                     department.name AS department, 
-                    e2.first_name AS manager FROM employee 
-                    LEFT JOIN employee as e2 ON e2.id = employee.manager_id 
+                    e.first_name AS manager FROM employee 
+                    LEFT JOIN employee as e ON e.id = employee.manager_id 
                     JOIN role ON employee.role_id = role.id 
                     JOIN department ON role.department_id = department.id 
                     WHERE department.name = ? 

@@ -13,10 +13,11 @@ import consTable from 'console.table';
 // const createData = require('./utils/create-data.js');
 
 // Delete employee data functions
+import { removeDepartment, removeRole, removeEmployee } from './utils/delete-data.js';
 
 // // Update employee data functions
 // const updateData = require('./utils/update-data.js');
-import { removeDepartment, removeRole, removeEmployee } from './utils/delete-data.js';
+import { updateManager, updateRole } from './utils/update-data.js';
 
 // View employee data functions
 import {
@@ -53,10 +54,12 @@ function startPrompt() {
                 'View All Departments',
                 'Delete A Department',
                 'View All Roles',
+                "Update Employee's Role",
                 'Delete A Role',
                 'View All Employees',
                 'View Employees By Department',
                 'View Employees By Manager',
+                "Update Employee's Manager",
                 'Delete An Employee',
                 'QUIT',
             ],
@@ -72,6 +75,9 @@ function startPrompt() {
                 case 'View All Roles':
                     viewRoles(connection, startPrompt);
                     break;
+                case "Update Employee's Role":
+                    updateRole(connection, startPrompt);
+                    break;
                 case 'Delete A Role':
                     removeRole(connection, startPrompt);
                     break;
@@ -83,6 +89,9 @@ function startPrompt() {
                     break;
                 case 'View Employees By Manager':
                     viewEmployeeManager(connection, startPrompt);
+                    break;
+                case "Update Employee's Manager":
+                    updateManager(connection, startPrompt);
                     break;
                 case 'Delete An Employee':
                     removeEmployee(connection, startPrompt);
