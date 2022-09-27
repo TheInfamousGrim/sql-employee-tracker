@@ -8,7 +8,7 @@ import inquirer from 'inquirer';
 /*                       view employee data sql queries                       */
 /* -------------------------------------------------------------------------- */
 
-function viewAllEmployees(connection, cb) {
+function viewAllEmployees(connection, startPrompt) {
     const query = `SELECT employee.id, employee.first_name, employee.last_name, 
         role.title, role.salary, 
         department.name AS department, 
@@ -20,7 +20,7 @@ function viewAllEmployees(connection, cb) {
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
-        cb();
+        startPrompt();
     });
 }
 
@@ -66,25 +66,26 @@ function viewEmployeeManager(connection, startPrompt) {
     );
 }
 
-function viewRoles(connection, startPromptFunc) {
+function viewRoles(connection, startPrompt) {
     const query = 'SELECT * FROM role';
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
-        startPromptFunc();
+        startPrompt();
     });
 }
 
-function viewDepartments(connection, startPromptFunc) {
+function viewDepartments(connection, startPrompt) {
     const query = 'SELECT * FROM department';
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
-        startPromptFunc();
+        startPrompt();
     });
 }
 
-function viewEmployeeDepartment(connection, cb) {
+// Create a table of Employees based on the department
+function viewEmployeeDepartment(connection, startPrompt) {
     // Query the database for all available departments to prompt user
     connection.query('SELECT * FROM department', (err, results) => {
         if (err) throw err;
@@ -117,7 +118,7 @@ function viewEmployeeDepartment(connection, cb) {
                 connection.query(query, answer.department, (err, res) => {
                     if (err) throw err;
                     console.table(res);
-                    cb();
+                    startPrompt();
                 });
             });
     });

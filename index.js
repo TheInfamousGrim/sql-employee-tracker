@@ -11,6 +11,7 @@ import consTable from 'console.table';
 /* ---------------------------- internal modules ---------------------------- */
 // Create employee data functions
 // const createData = require('./utils/create-data.js');
+import { createEmployee } from './utils/create-data.js';
 
 // Delete employee data functions
 import { removeDepartment, removeRole, removeEmployee } from './utils/delete-data.js';
@@ -59,6 +60,7 @@ function startPrompt() {
                 'View All Employees',
                 'View Employees By Department',
                 'View Employees By Manager',
+                'Add An Employee',
                 "Update Employee's Manager",
                 'Delete An Employee',
                 'QUIT',
@@ -89,6 +91,9 @@ function startPrompt() {
                     break;
                 case 'View Employees By Manager':
                     viewEmployeeManager(connection, startPrompt);
+                    break;
+                case 'Add An Employee':
+                    createEmployee(connection, startPrompt);
                     break;
                 case "Update Employee's Manager":
                     updateManager(connection, startPrompt);

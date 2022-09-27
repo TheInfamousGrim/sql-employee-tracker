@@ -9,9 +9,9 @@ import inquirer from 'inquirer';
 /* -------------------------------------------------------------------------- */
 
 // Create a new employee
-function createEmployee(connection, cb) {
+function createEmployee(connection, startPrompt) {
     const newEmployee = {};
-    connection.query('SELECT * FROM employee_role', (err, results) => {
+    connection.query('SELECT * FROM role', (err, results) => {
         if (err) throw err;
         inquirer
             .prompt([
@@ -57,20 +57,54 @@ function createEmployee(connection, cb) {
                     },
                     message: `What is the employee's role?`,
                 },
+                {
+                    // Select the employees manager
+                    name: 'employee_manager',
+                    type: 'list',
+                    // Get the employee managers from employee_role table
+                    choices() {
+                        const choicesArray = [];
+                        const managerQuery = `SELECT DISTINCT e.id, e.first_name, e.last_name FROM employee
+                        LEFT JOIN employee AS e ON employee.manager_id = e.id WHERE e.first_name IS NOT NULL`;
+                        connection.query(managerQuery, (error, managerResults) => {
+                            if (error) throw error;
+                            for (let i = 0; i < results.length; i++) {
+                                choicesArray.push(`${managerResults[i].first_name} ${managerResults[i].last_name}`);
+                                console.log(choicesArray);
+                            }
+                            console.log(choicesArray);
+                            return choicesArray;
+                        });
+                        console.log(choicesArray);
+                        return choicesArray;
+                    },
+                    message: 'Select the manager for the employee',
+                },
             ])
-            .then(() => {
+            .then((answer) => {
                 // Add inputs as data into newEmployee object
                 newEmployee.first_name = answer.first_name;
                 newEmployee.last_name = answer.last_name;
 
                 // Get the job role id from db
-                connection.query('SELECT * FROM employee_role WHERE title = ?', answer.employee_role, (err, res) => {
+                connection.query('SELECT * FROM role WHERE title = ?', answer.employee_role, (err, jobRoleResults) => {
                     if (err) throw err;
 
-                    newEmployee.employee_role_id = res[0].id;
+                    newEmployee.employee_role_id = jobRoleResults[0].id;
                 });
 
                 // Get the manager id from db
+                connection.query(
+                    'SELECT * FROM employee WHERE first_name = ?',
+                    answer.employee_manager.split(' ')[0],
+                    (error, managerIdResults) => {
+                        if (error) throw error;
+
+                        newEmployee.employee_manager_id = managerIdResults[0].id;
+                    }
+                );
+
+                console.log(newEmployee);
             });
     });
 }
@@ -78,3 +112,5 @@ function createEmployee(connection, cb) {
 /* -------------------------------------------------------------------------- */
 /*                           export create functions                          */
 /* -------------------------------------------------------------------------- */
+
+export { createEmployee };
