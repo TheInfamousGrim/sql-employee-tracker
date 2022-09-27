@@ -18,7 +18,9 @@
   "homepage": "https://github.com/TheInfamousGrim/sql-employee-tracker#readme",
   "dependencies": {
     "console.table": "^0.10.0",
+    "fs": "^0.0.1-security",
     "inquirer": "^9.1.2",
     "mysql2": "^2.3.3"
-  }
+  },
+  "type": "module"
 }
