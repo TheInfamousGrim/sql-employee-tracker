@@ -57,29 +57,6 @@ function createEmployee(connection, startPrompt) {
                     },
                     message: `What is the employee's role?`,
                 },
-                {
-                    // Select the employees manager
-                    name: 'employee_manager',
-                    type: 'list',
-                    // Get the employee managers from employee_role table
-                    choices() {
-                        const choicesArray = [];
-                        const managerQuery = `SELECT DISTINCT e.id, e.first_name, e.last_name FROM employee
-                        LEFT JOIN employee AS e ON employee.manager_id = e.id WHERE e.first_name IS NOT NULL`;
-                        connection.query(managerQuery, (error, managerResults) => {
-                            if (error) throw error;
-                            for (let i = 0; i < results.length; i++) {
-                                choicesArray.push(`${managerResults[i].first_name} ${managerResults[i].last_name}`);
-                                console.log(choicesArray);
-                            }
-                            console.log(choicesArray);
-                            return choicesArray;
-                        });
-                        console.log(choicesArray);
-                        return choicesArray;
-                    },
-                    message: 'Select the manager for the employee',
-                },
             ])
             .then((answer) => {
                 // Add inputs as data into newEmployee object
@@ -90,27 +67,146 @@ function createEmployee(connection, startPrompt) {
                 connection.query('SELECT * FROM role WHERE title = ?', answer.employee_role, (err, jobRoleResults) => {
                     if (err) throw err;
 
-                    newEmployee.employee_role_id = jobRoleResults[0].id;
+                    newEmployee.role_id = jobRoleResults[0].id;
                 });
 
-                // Get the manager id from db
-                connection.query(
-                    'SELECT * FROM employee WHERE first_name = ?',
-                    answer.employee_manager.split(' ')[0],
-                    (error, managerIdResults) => {
-                        if (error) throw error;
+                // Ask for manager
+                connection.query('SELECT * FROM employee;', (err, managerResults) => {
+                    if (err) throw err;
+                    inquirer
+                        .prompt([
+                            {
+                                name: 'manager_name',
+                                type: 'list',
+                                choices() {
+                                    const choiceArray = [];
+                                    for (let i = 0; i < managerResults.length; i++) {
+                                        choiceArray.push(
+                                            `${managerResults[i].first_name} ${managerResults[i].last_name}`
+                                        );
+                                    }
+                                    return choiceArray;
+                                },
+                                message: "Who is the employee's manager?",
+                            },
+                        ])
+                        .then((managerAnswer) => {
+                            // Translate manager_name to id
+                            connection.query(
+                                'SELECT id FROM employee WHERE first_name = ?',
+                                managerAnswer.manager_name.split(' ')[0],
+                                (err, managerIdResults) => {
+                                    if (err) throw err;
+                                    newEmployee.manager_id = managerIdResults[0].id;
+                                    console.log('Adding new employee: ', newEmployee);
 
-                        newEmployee.employee_manager_id = managerIdResults[0].id;
-                    }
-                );
-
-                console.log(newEmployee);
+                                    connection.query('INSERT INTO employee SET ?', newEmployee, (err) => {
+                                        if (err) throw err;
+                                        console.log('Employee successfully added.');
+                                        startPrompt();
+                                    });
+                                }
+                            );
+                        });
+                });
             });
     });
+}
+
+function createRole(connection, startPrompt) {
+    const newRole = {};
+    connection.query('SELECT * FROM department', (err, results) => {
+        if (err) throw err;
+        inquirer
+            .prompt([
+                {
+                    name: 'role_title',
+                    type: 'input',
+                    default: 'Councilor',
+                    message: 'What is the role you would like to add?',
+                    validate(answer) {
+                        if (answer.length < 1) {
+                            return console.log('A valid role is required.');
+                        }
+                        return true;
+                    },
+                },
+                {
+                    name: 'salary',
+                    type: 'input',
+                    default: '21000',
+                    message: 'What is the salary of the role?',
+                    validate(answer) {
+                        if (answer.length < 1) {
+                            return console.log('A valid salary is required.');
+                        }
+                        return true;
+                    },
+                },
+                {
+                    name: 'dept_name',
+                    type: 'list',
+                    choices() {
+                        const choiceArray = [];
+                        for (let i = 0; i < results.length; i++) {
+                            choiceArray.push(results[i].name);
+                        }
+                        return choiceArray;
+                    },
+                    message: 'Which department does the role belong to?',
+                },
+            ])
+            .then((answer) => {
+                newRole.title = answer.role_title;
+                newRole.salary = answer.salary;
+
+                // Translate manager_name to id
+                connection.query(
+                    'SELECT id FROM department WHERE name = ?',
+                    answer.dept_name,
+                    (err, departmentResults) => {
+                        if (err) throw err;
+                        newRole.department_id = departmentResults[0].id;
+                        console.log('Adding new role: ', newRole);
+
+                        connection.query('INSERT INTO role SET ?', newRole, (err) => {
+                            if (err) throw err;
+                            console.log('Role successfully added.');
+                            startPrompt();
+                        });
+                    }
+                );
+            });
+    });
+}
+
+function createDepartment(connection, startPrompt) {
+    inquirer
+        .prompt([
+            {
+                name: 'dept_name',
+                type: 'input',
+                default: 'Marketing',
+                message: 'Type the department you wish to create',
+                validate(answer) {
+                    if (answer.length < 1) {
+                        return console.log('A valid department name is required.');
+                    }
+                    return true;
+                },
+            },
+        ])
+        .then((answer) => {
+            connection.query('INSERT INTO department (name) VALUES (?)', answer.dept_name, (err) => {
+                if (err) throw err;
+                console.log('Department successfully added.');
+                startPrompt();
+            });
+        });
 }
 
 /* -------------------------------------------------------------------------- */
 /*                           export create functions                          */
 /* -------------------------------------------------------------------------- */
 
-export { createEmployee };
+export { createDepartment, createRole, createEmployee };

@@ -5,13 +5,12 @@
 /* ---------------------------- External Packages --------------------------- */
 import mysql from 'mysql2';
 import inquirer from 'inquirer';
-import fs from 'fs';
 import consTable from 'console.table';
 
 /* ---------------------------- internal modules ---------------------------- */
 // Create employee data functions
 // const createData = require('./utils/create-data.js');
-import { createEmployee } from './utils/create-data.js';
+import { createDepartment, createRole, createEmployee } from './utils/create-data.js';
 
 // Delete employee data functions
 import { removeDepartment, removeRole, removeEmployee } from './utils/delete-data.js';
@@ -53,8 +52,10 @@ function startPrompt() {
             message: 'What would you like to do?',
             choices: [
                 'View All Departments',
+                'Add A Department',
                 'Delete A Department',
                 'View All Roles',
+                'Add A Role',
                 "Update Employee's Role",
                 'Delete A Role',
                 'View All Employees',
@@ -71,11 +72,17 @@ function startPrompt() {
                 case 'View All Departments':
                     viewDepartments(connection, startPrompt);
                     break;
+                case 'Add A Department':
+                    createDepartment(connection, startPrompt);
+                    break;
                 case 'Delete A Department':
                     removeDepartment(connection, startPrompt);
                     break;
                 case 'View All Roles':
                     viewRoles(connection, startPrompt);
+                    break;
+                case 'Add A Role':
+                    createRole(connection, startPrompt);
                     break;
                 case "Update Employee's Role":
                     updateRole(connection, startPrompt);
