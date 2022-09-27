@@ -90,7 +90,7 @@ If you've followed these steps correctly then the application should be good to 
 
 ## Usage
 
-For a video of how to use the application please follow [this link](https://www.youtube.com/watch?v=75thtqfJ6Sc&t=23s)
+For a video of how to use the application please follow [this link](https://youtu.be/rWYocO9yQ7s)
 
 Written instructions:
 
