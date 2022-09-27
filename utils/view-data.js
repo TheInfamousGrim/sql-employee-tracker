@@ -122,4 +122,8 @@ function viewEmployeeDepartment(connection, cb) {
     });
 }
 
+/* -------------------------------------------------------------------------- */
+/*                            export view functions                           */
+/* -------------------------------------------------------------------------- */
+
 export { viewAllEmployees, viewEmployeeManager, viewRoles, viewDepartments, viewEmployeeDepartment };

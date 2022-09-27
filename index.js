@@ -9,16 +9,16 @@ import fs from 'fs';
 import consTable from 'console.table';
 
 /* ---------------------------- internal modules ---------------------------- */
-// Create employee data
+// Create employee data functions
 // const createData = require('./utils/create-data.js');
 
-// // Delete employee data
-// const deleteData = require('./utils/delete-data.js');
+// Delete employee data functions
 
-// // Update employee data
+// // Update employee data functions
 // const updateData = require('./utils/update-data.js');
+import { removeDepartment, removeRole, removeEmployee } from './utils/delete-data.js';
 
-// View employee data
+// View employee data functions
 import {
     viewAllEmployees,
     viewEmployeeManager,
@@ -51,10 +51,13 @@ function startPrompt() {
             message: 'What would you like to do?',
             choices: [
                 'View All Departments',
+                'Delete A Department',
                 'View All Roles',
+                'Delete A Role',
                 'View All Employees',
                 'View Employees By Department',
                 'View Employees By Manager',
+                'Delete An Employee',
                 'QUIT',
             ],
         })
@@ -63,8 +66,14 @@ function startPrompt() {
                 case 'View All Departments':
                     viewDepartments(connection, startPrompt);
                     break;
+                case 'Delete A Department':
+                    removeDepartment(connection, startPrompt);
+                    break;
                 case 'View All Roles':
                     viewRoles(connection, startPrompt);
+                    break;
+                case 'Delete A Role':
+                    removeRole(connection, startPrompt);
                     break;
                 case 'View All Employees':
                     viewAllEmployees(connection, startPrompt);
@@ -74,6 +83,9 @@ function startPrompt() {
                     break;
                 case 'View Employees By Manager':
                     viewEmployeeManager(connection, startPrompt);
+                    break;
+                case 'Delete An Employee':
+                    removeEmployee(connection, startPrompt);
                     break;
                 case 'QUIT':
                     connection.end();
